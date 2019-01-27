@@ -11,7 +11,10 @@ class Query:
         self.table = table
 
     def equals(self, operand):
-        self.query += ' = ' + str(operand)
+        if isinstance(operand, str):
+            self.query += " = '{}'".format(operand)
+        else:
+            self.query += ' = ' + str(operand)
         self.table.query += self.query
         return self.table
 
@@ -31,12 +34,18 @@ class ComparisonQuery(Query):
     """
 
     def greater_than(self, operand):
-        self.query += ' > ' + str(operand)
+        if isinstance(operand, str):
+            self.query += " > '{}'".format(operand)
+        else:
+            self.query += ' > ' + str(operand)
         self.table.query += self.query
         return self.table
 
     def less_than(self, operand):
-        self.query += ' < ' + str(operand)
+        if isinstance(operand, str):
+            self.query += " < '{}'".format(operand)
+        else:
+            self.query += ' < ' + str(operand)
         self.table.query += self.query
         return self.table
 
@@ -142,7 +151,7 @@ class TestTableQuery(unittest.TestCase):
             .and_.date.equals('01-01-2019')\
             .and_.url.equals('www.url.com')\
             .and_.rating.less_than(2)
-        self.assertEqual('SELECT * FROM table WHERE id IN (0, 1, 2) AND id > 1 AND date = 01-01-2019 AND url = www.url.com AND rating < 2',
+        self.assertEqual("SELECT * FROM table WHERE id IN (0, 1, 2) AND id > 1 AND date = '01-01-2019' AND url = 'www.url.com' AND rating < 2",
                          q.query)
 
     def test_select_from(self):
